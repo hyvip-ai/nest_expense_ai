@@ -9,7 +9,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { ParseEnumPipe } from '@nestjs/common/pipes';
-import { ReportBodyDTO } from './dto';
+import { ReportBodyDTO, ReportBodyUpdateDTO } from './dto';
 import { ReportEnum } from './enum';
 import { ReportService } from './report.service';
 
@@ -18,8 +18,10 @@ export class ReportController {
   constructor(private reportService: ReportService) {}
 
   @Get()
-  getAllReports() {
-    return this.reportService.allReports();
+  getAllReports(
+    @Param('type', new ParseEnumPipe(ReportEnum)) type: ReportEnum,
+  ) {
+    return this.reportService.allReports(type);
   }
 
   @Post()
@@ -41,18 +43,21 @@ export class ReportController {
   @Put('/:id')
   updateReportById(
     @Param('id') id: string,
-    @Param('type', new ParseEnumPipe(ReportEnum)) type: ReportEnum,
+    @Body() reportDTOUpdate: ReportBodyUpdateDTO,
   ) {
-    return this.reportService.updateReport(id, type);
+    return this.reportService.updateReportById(id, reportDTOUpdate);
   }
 
   @Patch('/:id')
-  editReportById(@Param('id') id: string, @Param('type') type: ReportEnum) {
-    return this.reportService.editReportById(id, type);
+  editReportById(
+    @Param('id') id: string,
+    @Body() reportDTOUpdate: ReportBodyUpdateDTO,
+  ) {
+    return this.reportService.updateReportById(id, reportDTOUpdate);
   }
 
   @Delete('/:id')
-  deleteReportById(@Param('id') id: string, @Param('type') type: ReportEnum) {
-    return this.reportService.deleteReportById(id, type);
+  deleteReportById(@Param('id') id: string) {
+    return this.reportService.deleteReportById(id);
   }
 }
